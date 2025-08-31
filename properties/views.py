@@ -1,13 +1,12 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
+from django.views.decorators.http import require_GET
 from .models import Property
 
-# كاش 15 دقيقة (900 ثانية)
-@cache_page(60 * 15)
+@require_GET
+@cache_page(60 * 15)  # cache for 15 minutes
 def property_list(request):
-    properties = Property.objects.all().values("id", "title", "description", "price", "location")
-    return JsonResponse(list(properties), safe=False)
+    properties = list(Property.objects.values())  # Convert queryset to list of dicts
+    return JsonResponse({
+        "data": properties
+    })
